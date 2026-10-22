@@ -1,52 +1,83 @@
-# Library Management System
+# Java Library Management
 
-A cyber-minimalist console application developed in Java for managing library book inventories. The system utilizes object-oriented principles to execute book entity tracking, user input validation, and transaction state management.
+**A console catalogue for adding, browsing, borrowing and returning books.**
 
-## Features
+A Java coursework project by **Srun Sochettra**, exploring object-oriented modelling, input handling and a manually resized array. Books and authors are displayed in terminal tables using the bundled text-table-formatter dependency.
 
-* **Dynamic Inventory Tracking:** Custom array resizing logic (`ensureCapacity`) for unbound book entity allocation.
-* **Input Validation:** Strict regex-based parsing (`^[1-9]\d*$`) for operational integrity and error prevention.
-* **Formatted Output:** Integrates `text-table-formatter-1.2.4` for structured, tabular data rendering within the terminal interface.
-* **Timezone-Aware Initialization:** Generates system setup timestamps localized to the `Asia/Phnom_Penh` zone.
-* **Transaction Management:** Boolean state toggles restricting duplicate borrow/return actions.
+This is an in-memory learning application, not a database-backed library service. Records disappear when the process exits.
 
-## Tech Stack
+## What you can do
 
-* **Language:** Java 21
-* **Dependencies:** `text-table-formatter-1.2.4.jar`
-* **Paradigm:** Object-Oriented Programming (OOP)
+Start by entering a library name and address, then choose a menu option:
 
-## Setup and Execution
+| Option | Action |
+| --- | --- |
+| `1` | Add a book with its title, author, author activity text and publication year |
+| `2` | Show all books |
+| `3` | Show available books only |
+| `4` | Borrow a book by ID |
+| `5` | Return a book by ID |
+| `6` | Exit |
 
-1.  Clone the repository:
-    ```bash
-    git clone [https://github.com/SRUN-Sochettra/Library-Management.git](https://github.com/SRUN-Sochettra/Library-Management.git)
-    ```
-2.  Navigate to the source directory:
-    ```bash
-    cd Library-Management/src
-    ```
-3.  Compile the source files, linking the external formatting dependency:
-    ```bash
-    javac -cp ".:../lib/text-table-formatter-1.2.4.jar" Main.java
-    ```
-    *(Note: Use `;` instead of `:` for the classpath separator on Windows environments)*
-4.  Execute the application:
-    ```bash
-    java -cp ".:../lib/text-table-formatter-1.2.4.jar" Main
-    ```
+New books receive sequential IDs starting at 1 and begin available. Missing IDs and duplicate borrow/return actions produce messages without changing availability. There are no borrower accounts, due dates, fines, editing or deletion features.
 
-## Usage Protocol
+## Run locally
 
-Upon execution, initialize the library parameters (Name and Address). The system loop provides a 6-node operational interface:
-1.  **Add Book:** Requires Title, Author Name, Author Year Active, and Published Year.
-2.  **Show All Books:** Renders complete database via console table.
-3.  **Show Available Books:** Filters and renders only currently available stock.
-4.  **Borrow Book:** Queries database by ID to update availability status.
-5.  **Return Book:** Queries database by ID to restore availability status.
-6.  **Exit:** Terminates process.
+The original README recommends **JDK 21**. The IntelliJ module inherits its JDK rather than pinning one; this refresh does not establish a minimum supported version.
 
-## Author
+The repository inventory lists `lib/text-table-formatter-1.2.4.jar`, and the IntelliJ module references that path. The binary is excluded from the text export, so use the original checkout and confirm the JAR exists. Its contents and compatibility were not tested here.
 
-**Srun Sochettra**
-GitHub: [@SRUN-Sochettra](https://github.com/SRUN-Sochettra)
+### Windows PowerShell
+
+Suggested commands from the repository root:
+
+```powershell
+javac -encoding UTF-8 -cp "lib/text-table-formatter-1.2.4.jar" -d out src/Main.java
+java -cp "out;lib/text-table-formatter-1.2.4.jar" Main
+```
+
+### POSIX shell
+
+```sh
+javac -encoding UTF-8 -cp "lib/text-table-formatter-1.2.4.jar" -d out src/Main.java
+java -cp "out:lib/text-table-formatter-1.2.4.jar" Main
+```
+
+These are proposed local commands, not commands executed during this refresh. The runtime classpath separator differs between the two shells/platforms. Alternatively, open the project in IntelliJ IDEA, review its JDK and library configuration, and run Main.
+
+No database, API key or environment file is used by the supplied source. There is no Maven or Gradle build configuration in the export.
+
+## Implementation
+
+All application classes are in [src/Main.java](src/Main.java):
+
+| Class | Responsibility |
+| --- | --- |
+| `Author` | Author name and free-text activity period |
+| `Book` | ID, title, author, publication year and availability |
+| `InputUtil` | Menu parsing, positive integers and non-empty text |
+| `Library` | Catalogue storage, lookup, table output and borrow/return state |
+| `Main` | Setup prompts and menu loop |
+
+The catalogue starts with ten array slots and doubles capacity when full. Lookup scans stored entries by ID. This demonstrates array growth, not unlimited storage.
+
+Setup displays a timestamp using `Asia/Phnom_Penh`. It is a setup message, not a loan timestamp or audit log. Table columns have configured widths and cropping, so long text may be shortened in the display.
+
+## Input and scope limitations
+
+- Menu choices are restricted to 1–6; numeric fields accept positive integer text.
+- Very large digit strings can still cause integer parsing to fail. End-of-input is not handled as a graceful exit.
+- Publication year is checked only as a positive integer, not against a calendar range. Author activity is non-empty text, not a validated date interval.
+- Duplicate titles/authors are not rejected.
+- Borrow/return changes a boolean flag. It is not a database transaction or a borrower-history system.
+- No persistent storage, authentication or automated test suite is supplied.
+
+These are source observations, not repairs included in this package. No compilation, dependency loading, application execution or behavioural testing was performed during the documentation refresh.
+
+## Contributing and security
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md). Suggested repository metadata and application instructions for this documentation overlay are in [the refresh notes](docs/repository-refresh.md).
+
+## Licence
+
+No project licence file is included in the supplied export. This refresh does not assign one or establish redistribution rights for the bundled third-party JAR. Confirm project and dependency permissions separately.
